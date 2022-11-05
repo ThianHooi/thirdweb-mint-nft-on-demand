@@ -1,11 +1,20 @@
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { useAddress, useContract } from '@thirdweb-dev/react';
+import { SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk';
 import { useState } from 'react';
+import { CONTRACT_ADDRESS } from '../lib/constant';
 import handleFetchErrors from '../util/handle-fetch-error';
 
 const ImageUploader = () => {
   const [image, setImage] = useState<Blob>();
   const [createObjectURL, setCreateObjectURL] = useState<string>();
   const [inputNftName, setInputNftName] = useState<string>();
+
+  const { contract, isLoading: isLoadingContract } = useContract(
+    CONTRACT_ADDRESS,
+    'nft-collection'
+  );
+  const walletAddress = useAddress();
 
   const uploadToClient = (event: React.FormEvent<HTMLInputElement>) => {
     const eventTarget = event.target as HTMLInputElement;
@@ -20,18 +29,28 @@ const ImageUploader = () => {
   };
 
   const uploadToServer = async () => {
-    if (!image || !inputNftName) return;
+    if (!image || !inputNftName || !walletAddress) return;
 
     const body = new FormData();
     body.append('file', image);
     body.append('name', inputNftName);
-    const response = await fetch('/api/upload', {
+    body.append('walletAddress', walletAddress);
+    const response = await fetch('/api/generate-mint-signature', {
       method: 'POST',
       body,
     })
       .then(handleFetchErrors)
       .then((res) => res.json())
       .catch((err) => console.error(err.message));
+
+    claimWithSignature(response.signature);
+  };
+
+  const claimWithSignature = async (
+    signedPayload: SignedPayload721WithQuantitySignature
+  ) => {
+    const nft = await contract?.signature.mint(signedPayload);
+    alert(`Succesfully minted NFT ${nft?.id}!`);
   };
 
   return (
