@@ -1,7 +1,6 @@
 import {
   useContract,
   useContractMetadata,
-  useNFT,
   useTotalCount,
 } from '@thirdweb-dev/react';
 
