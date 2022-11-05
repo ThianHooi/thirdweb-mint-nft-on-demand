@@ -140,11 +140,12 @@ const ImageUploader = () => {
                   className={classNames(
                     'w-52 h-52 p-4 border-2 rounded-lg bg-transparent flex flex-col justify-center items-center my-2',
                     {
-                      'border-2 border-primary-500': choice === selectedImage,
+                      'border-2 border-primary-500':
+                        choice.url === selectedImage,
                     }
                   )}
                   onClick={() => {
-                    setSelectedImage(choice);
+                    setSelectedImage(choice.url);
                   }}
                   key={index}
                 >
@@ -152,7 +153,7 @@ const ImageUploader = () => {
                     alt="doodle"
                     width={72}
                     height={72}
-                    src={`/images/${choice}`}
+                    src={`/images/${choice.fileName}`}
                   ></Image>
                 </div>
               );

@@ -46,12 +46,12 @@ const OwnedNfts = () => {
           <p className="text-center">You have not minted any NFTs</p>
         )}
         {ownedNftCount > 0 && (
-          <div className="flex flex-wrap justify-around items-center space-x-8">
+          <div className="flex flex-wrap justify-around items-center">
             {ownedNfts.map((nft, index) => {
               return (
                 <div
                   key={index}
-                  className="w-48 h-48 p-12 border-2 rounded-lg bg-transparent flex flex-col justify-center items-center"
+                  className="w-48 h-48 p-12 border-2 rounded-lg bg-transparent flex flex-col justify-center items-center m-4"
                 >
                   <ThirdwebNftMedia metadata={nft.metadata} />
                   <p className="mt-4">Token ID: {nft.metadata.id}</p>

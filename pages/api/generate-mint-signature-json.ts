@@ -39,14 +39,9 @@ export default async function handler(
     case 'POST':
       const createNftInput = JSON.parse(body) as MintNftInput;
 
-      console.log('====================================');
-      console.log(body);
-      console.log(body.image);
-      console.log('====================================');
-
       const nftData = {
         name: createNftInput.name as string,
-        image: readFileSync(join(uploadDir, createNftInput.image) as string),
+        image: createNftInput.image,
       };
 
       const signature = await generateMintSignature(
