@@ -3,13 +3,12 @@ import {
   useContractMetadata,
   useTotalCount,
 } from '@thirdweb-dev/react';
-
-const CONTRACT_ADDRESS = '0xd1D4339FD664BCE5d7532143Cd86f2c98a3c9B59';
+import { CONTRACT_ADDRESS, CONTRACT_TYPE } from '../lib/constant';
 
 const ContractDetail = () => {
   const { contract, isLoading: isLoadingContract } = useContract(
     CONTRACT_ADDRESS,
-    'nft-collection'
+    CONTRACT_TYPE
   );
   const { data: contractMetadata, isLoading: isLoadingMetadata } =
     useContractMetadata(contract);
