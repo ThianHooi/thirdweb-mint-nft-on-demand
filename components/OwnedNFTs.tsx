@@ -2,7 +2,7 @@ import { ThirdwebNftMedia, useAddress, useContract } from '@thirdweb-dev/react';
 import { NFT } from '@thirdweb-dev/sdk';
 import { useEffect, useState } from 'react';
 import { CONTRACT_ADDRESS, CONTRACT_TYPE } from '../lib/constant';
-import { LinkIcon } from '@heroicons/react/24/solid';
+import { LinkIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
 const OwnedNfts = () => {
@@ -13,6 +13,7 @@ const OwnedNfts = () => {
   const walletAddress = useAddress();
   const [ownedNftCount, setOwnedNftCount] = useState<number>(0);
   const [ownedNfts, setOwnedNfts] = useState<NFT[]>([]);
+  const [render, setRender] = useState<boolean>(false);
 
   useEffect(() => {
     const getUserOwnedNftBalance = async () => {
@@ -25,7 +26,7 @@ const OwnedNfts = () => {
     };
 
     getUserOwnedNftBalance();
-  }, [walletAddress, contract]);
+  }, [walletAddress, contract, render]);
 
   if (!walletAddress) {
     return null;
@@ -33,7 +34,14 @@ const OwnedNfts = () => {
 
   return (
     <div className="mt-4 border-t-primary-400 border-t-2 text-white py-8">
-      <h1 className="text-xl text-center py-8">Your NFTs</h1>
+      <div className="flex justify-center items-center">
+        <h1 className="text-xl text-center py-8">Your NFTs</h1>
+        <ArrowPathIcon
+          onClick={() => setRender(!render)}
+          className="w-6 h-6 ml-4 cursor-pointer text-white"
+        />
+      </div>
+
       {ownedNftCount <= 0 && (
         <p className="text-center">You have not minted any NFTs</p>
       )}

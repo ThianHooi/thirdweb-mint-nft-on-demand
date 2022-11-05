@@ -6,12 +6,15 @@ import { CONTRACT_ADDRESS } from '../lib/constant';
 import handleFetchErrors from '../util/handle-fetch-error';
 import classNames from 'classnames';
 import Spinner from './Spinner';
+import { NftChoices } from '../lib/NftChoices';
+import Image from 'next/image';
 
 const ImageUploader = () => {
   const [image, setImage] = useState<Blob>();
   const [createObjectURL, setCreateObjectURL] = useState<string>();
   const [inputNftName, setInputNftName] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string>();
 
   const { contract, isLoading: isLoadingContract } = useContract(
     CONTRACT_ADDRESS,
@@ -31,7 +34,7 @@ const ImageUploader = () => {
   };
 
   const uploadToServer = async () => {
-    if (!image || !inputNftName) {
+    if (!selectedImage || !inputNftName) {
       alert('Please upload an image and enter your NFT Name');
       return;
     }
@@ -43,13 +46,18 @@ const ImageUploader = () => {
 
     setIsLoading(true);
 
-    const body = new FormData();
-    body.append('file', image);
-    body.append('name', inputNftName);
-    body.append('walletAddress', walletAddress);
-    const response = await fetch('/api/generate-mint-signature', {
+    // const body = new FormData();
+    // body.append('file', image);
+    // body.append('image', selectedImage);
+    // body.append('name', inputNftName);
+    // body.append('walletAddress', walletAddress);
+    const response = await fetch('/api/generate-mint-signature-json', {
       method: 'POST',
-      body,
+      body: JSON.stringify({
+        name: inputNftName,
+        walletAddress,
+        image: selectedImage,
+      }),
     })
       .then(handleFetchErrors)
       .then((res) => res.json())
@@ -81,7 +89,7 @@ const ImageUploader = () => {
     <div className="flex flex-col flex-wrap items-center justify-center py-8 bg-black rounded-xl mt-6">
       <div className="w-3/4 px-4 bg-transparent">
         <div className="mb-12">
-          <label className="mb-3 block text-base font-medium text-center text-white">
+          {/* <label className="mb-3 block text-base font-medium text-center text-white">
             Upload your image here
           </label>
           <div className="relative">
@@ -107,6 +115,33 @@ const ImageUploader = () => {
                 </span>
               </div>
             </label>
+          </div> */}
+
+          <h1 className="text-center text-white text-xl">Choose Your NFT</h1>
+          <div className="w-full flex flex-wrap justify-around">
+            {NftChoices.map((choice, index) => {
+              return (
+                <div
+                  className={classNames(
+                    'w-52 h-52 p-4 border-2 rounded-lg bg-transparent flex flex-col justify-center items-center my-2',
+                    {
+                      'border-2 border-primary-500': choice === selectedImage,
+                    }
+                  )}
+                  onClick={() => {
+                    setSelectedImage(choice);
+                  }}
+                  key={index}
+                >
+                  <Image
+                    alt="doodle"
+                    width={72}
+                    height={72}
+                    src={`/images/${choice}`}
+                  ></Image>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
