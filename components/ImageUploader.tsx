@@ -4,11 +4,14 @@ import { SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk';
 import { useState } from 'react';
 import { CONTRACT_ADDRESS } from '../lib/constant';
 import handleFetchErrors from '../util/handle-fetch-error';
+import classNames from 'classnames';
+import Spinner from './Spinner';
 
 const ImageUploader = () => {
   const [image, setImage] = useState<Blob>();
   const [createObjectURL, setCreateObjectURL] = useState<string>();
   const [inputNftName, setInputNftName] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { contract, isLoading: isLoadingContract } = useContract(
     CONTRACT_ADDRESS,
@@ -18,18 +21,26 @@ const ImageUploader = () => {
 
   const uploadToClient = (event: React.FormEvent<HTMLInputElement>) => {
     const eventTarget = event.target as HTMLInputElement;
+
     if (eventTarget.files && eventTarget.files[0]) {
       const uploadedFile = eventTarget.files[0];
 
       setImage(uploadedFile);
       setCreateObjectURL(URL.createObjectURL(uploadedFile));
+      uploadToServer();
     }
-
-    uploadToServer();
   };
 
   const uploadToServer = async () => {
-    if (!image || !inputNftName || !walletAddress) return;
+    if (!image || !inputNftName) {
+      alert('Please upload an image and enter your NFT Name');
+      return;
+    }
+
+    if (!walletAddress) {
+      alert('Please connect your wallet!');
+      return;
+    }
 
     const body = new FormData();
     body.append('file', image);
@@ -49,8 +60,17 @@ const ImageUploader = () => {
   const claimWithSignature = async (
     signedPayload: SignedPayload721WithQuantitySignature
   ) => {
-    const nft = await contract?.signature.mint(signedPayload);
-    alert(`Succesfully minted NFT ${nft?.id}!`);
+    setIsLoading(true);
+
+    try {
+      const nft = await contract?.signature.mint(signedPayload);
+      alert(`Succesfully minted NFT ${nft?.id}!`);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      alert(`Failed to mint. Something went wrong`);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -106,10 +126,19 @@ const ImageUploader = () => {
 
       <button
         type="button"
-        className="mt-4 w-3/4 inline-block px-6 py-2.5 bg-primary-700 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+        className={classNames(
+          `mt-4 w-3/4 flex px-6 py-2.5 bg-primary-700 text-white font-medium text-xs leading-tight uppercase rounded shadow-md transition duration-150 ease-in-out justify-center`,
+          {
+            'bg-gray-400': isLoading,
+            'hover:bg-blue-700 hover:shadow-lg': !isLoading,
+            'focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg':
+              !isLoading,
+          }
+        )}
         onClick={uploadToServer}
+        disabled={isLoading}
       >
-        Upload
+        {isLoading ? <Spinner /> : 'UPLOAD'}
       </button>
     </div>
   );
