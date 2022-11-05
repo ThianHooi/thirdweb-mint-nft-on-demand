@@ -27,7 +27,6 @@ const ImageUploader = () => {
 
       setImage(uploadedFile);
       setCreateObjectURL(URL.createObjectURL(uploadedFile));
-      uploadToServer();
     }
   };
 
@@ -42,6 +41,8 @@ const ImageUploader = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const body = new FormData();
     body.append('file', image);
     body.append('name', inputNftName);
@@ -52,7 +53,10 @@ const ImageUploader = () => {
     })
       .then(handleFetchErrors)
       .then((res) => res.json())
-      .catch((err) => console.error(err.message));
+      .catch((err) => {
+        console.error(err.message);
+        setIsLoading(false);
+      });
 
     claimWithSignature(response.signature);
   };

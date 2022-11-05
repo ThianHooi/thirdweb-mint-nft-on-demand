@@ -4,7 +4,7 @@ type Props = ChildrenT;
 
 const MainView: React.FC<Props> = ({ children }: Props) => {
   return (
-    <div className="bg-background w-screen h-full">
+    <div className="bg-background w-screen">
       <main>{children}</main>
     </div>
   );

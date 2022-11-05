@@ -6,7 +6,7 @@ type Props = ChildrenT;
 
 const HomeLayout: React.FC<Props> = (props: Props) => {
   return (
-    <div className='h-screen overflow-hidden'>
+    <div className='h-screen'>
       <Header />
       <MainView>{props.children}</MainView>
     </div>
