@@ -1,6 +1,14 @@
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-import { useAddress, useContract } from '@thirdweb-dev/react';
-import { SignedPayload721WithQuantitySignature } from '@thirdweb-dev/sdk';
+import {
+  useAddress,
+  useChainId,
+  useContract,
+  useNetwork,
+  useNetworkMismatch,
+} from '@thirdweb-dev/react';
+import {
+  ChainId,
+  SignedPayload721WithQuantitySignature,
+} from '@thirdweb-dev/sdk';
 import { useState } from 'react';
 import { CONTRACT_ADDRESS } from '../lib/constant';
 import handleFetchErrors from '../util/handle-fetch-error';
@@ -21,6 +29,8 @@ const ImageUploader = () => {
     'nft-collection'
   );
   const walletAddress = useAddress();
+  const isMismatched = useNetworkMismatch();
+  const [, switchNetwork] = useNetwork();
 
   const uploadToClient = (event: React.FormEvent<HTMLInputElement>) => {
     const eventTarget = event.target as HTMLInputElement;
@@ -41,6 +51,11 @@ const ImageUploader = () => {
 
     if (!walletAddress) {
       alert('Please connect your wallet!');
+      return;
+    }
+
+    if (isMismatched && switchNetwork) {
+      switchNetwork(ChainId.Mumbai);
       return;
     }
 
