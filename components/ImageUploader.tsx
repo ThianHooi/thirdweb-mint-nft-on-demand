@@ -89,6 +89,7 @@ const ImageUploader = () => {
                 <input
                   type="file"
                   name="file"
+                  accept="image/png, image/gif, image/jpeg"
                   id="file"
                   className="sr-only"
                   onChange={uploadToClient}
