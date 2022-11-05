@@ -32,7 +32,7 @@ export default async function handler(
       const uri = await storage.upload(nftData);
       const ipfsUrl = await storage.resolveScheme(uri);
 
-      res.status(200).json({ uri, ipfsUrl, nftData });
+      res.status(200).json({ uri, ipfsUrl, nftData, storedPath: url });
       break;
     default:
       res.setHeader('Allow', ['POST']);
